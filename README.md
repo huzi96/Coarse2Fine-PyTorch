@@ -8,7 +8,7 @@ This is the implementation of ther paper,
 This is the PyTorch version of Coarse-to-Fine Hyper-Prior Model. The code load and convert weights trained with TensorFlow, originally provided at <a href="https://github.com/huzi96/Coarse2Fine-ImaComp">Coarse2Fine-ImaComp</a>. Besides, this version contains several improvements over the original one:
 
 1. We have a brand new arithmetic coder implementation (in C++). It makes the encoding and decoding significantly faster (~10 times and more).
-2. We now have full support of GPU accelerated encoding and decoding. It can be toggled by by "--device cuda".
+2. We now have full support of GPU accelerated encoding and decoding. It can be toggled by "--device cuda".
 3. Partitioning is implemented, providing the support of compressing and decompressing images in GPUs with limited memory.
 
 These new features are still being tested. If you encounter any problem, please feel free to contact me.
