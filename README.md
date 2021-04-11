@@ -1,4 +1,6 @@
 # Coarse-to-Fine Hyper-Prior Modeling for Learned Image Compressionn
+## Update
+We add an experimental training code to help developers train their own compression models for a specific range of bit-rate. Please check the ```train/``` sub-directory.
 ## Overview
 This is the implementation of ther paper,
 > Yueyu Hu, Wenhan Yang, Jiaying Liu, 
