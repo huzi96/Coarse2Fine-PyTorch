@@ -7,6 +7,7 @@ You may place the 1600 PNG files in a directory, assumed to be named ```IMAGE_PA
 
 ### Command
 An example command to train the network with 2 GPUs is as follows,
+
 ```CUDA_VISIBLE_DEVICES=0,1 python train.py train --batchsize 16 --train_glob "IMAGE_PATH/*.png" --checkpoint_dir checkpoint --lambda 0.004```
 
 You may use different numbers of GPUs. Please modify ```n_parallel``` in the code if you use a different number of GPUs.
