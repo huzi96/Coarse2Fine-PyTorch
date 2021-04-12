@@ -3,7 +3,7 @@
 ### Data
 We use DIV2K as the training data. All 800 images are included. Besides, we down-sampled all images to half of their sizes and build a training set with 1600 images.
 
-You may place the 1600 PNG files in a directory, whose name is assumed to be ```IMAGE_PATH```.
+You may place the 1600 PNG files in a directory, assumed to be named ```IMAGE_PATH```.
 
 ### Command
 An example command to train the network with 2 GPUs is as follows,
