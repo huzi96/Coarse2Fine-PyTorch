@@ -1,5 +1,6 @@
 # Coarse-to-Fine Hyper-Prior Modeling for Learned Image Compressionn
 ## Update
+We now provide the testing code for trained weights. See ```AppEncDec_Trained.py```. However, this is still a workaround and you need to manually specify the loaded weights filename.
 We add an experimental training code to help developers train their own compression models for a specific range of bit-rate. Please check the ```train/``` sub-directory.
 ## Overview
 This is the implementation of ther paper,

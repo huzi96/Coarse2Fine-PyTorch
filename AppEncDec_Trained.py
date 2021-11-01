@@ -22,7 +22,7 @@ import pickle
 import math
 import time
 
-from networks import *
+from networks_trained import *
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(

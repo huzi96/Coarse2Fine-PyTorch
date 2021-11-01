@@ -21,7 +21,8 @@ from torch.autograd import Function
 import time
 import os
 
-from gdn_v2 import GDN
+from train.gdn_v3 import GDN
+from train.gdn_v3 import IGDN
 import subprocess as sp
 import math
 
@@ -83,23 +84,27 @@ class analysisTransformModel(nn.Module):
         return x
 
 class synthesisTransformModel(nn.Module):
-    def __init__(self, in_dim, num_filters):
+    def __init__(self, in_dim, num_filters, conv_trainable=True):
         super(synthesisTransformModel, self).__init__()
         self.transform = nn.Sequential(
-          nn.ZeroPad2d((1,0,1,0)),
-          nn.ConvTranspose2d(in_dim, num_filters[0], 5, 2, 3, output_padding=1),
-          GDN(num_filters[0], inverse=True),
-          nn.ZeroPad2d((1,0,1,0)),
-          nn.ConvTranspose2d(num_filters[0], num_filters[1], 5, 2, 3, output_padding=1),
-          GDN(num_filters[1], inverse=True),
-          nn.ZeroPad2d((1,0,1,0)),
-          nn.ConvTranspose2d(num_filters[1], num_filters[2], 5, 2, 3, output_padding=1),
-          GDN(num_filters[2], inverse=True)
+            nn.ZeroPad2d((1, 0, 1, 0)),
+            nn.ConvTranspose2d(
+                in_dim, num_filters[0], 5, 2, 3, output_padding=1),
+            IGDN(num_filters[0]),
+            nn.ZeroPad2d((1, 0, 1, 0)),
+            nn.ConvTranspose2d(
+                num_filters[0], num_filters[1], 5, 2, 3, output_padding=1),
+            IGDN(num_filters[1]),
+            nn.ZeroPad2d((1, 0, 1, 0)),
+            nn.ConvTranspose2d(
+                num_filters[1], num_filters[2], 5, 2, 3, output_padding=1),
+            IGDN(num_filters[2])
         )
       
     def forward(self, inputs):
         x = self.transform(inputs)
         return x
+
 
 class Space2Depth(nn.Module):
     def __init__(self, r):
@@ -632,9 +637,21 @@ def compress_low(args):
     net = NetHigh().eval()
   net = net.to(device)
 
-  sd = net.state_dict()
-  td = load_tf_weights(sd, f'models/model{model_type}_qp{qp}.pk')
-  net.load_state_dict(td)
+  # sd = net.state_dict()
+  # td = load_tf_weights(sd, f'models/model{model_type}_qp{qp}.pk')
+  # Changed to directly load the weights
+  # Here we only manually load one fixed model for testing
+  # You can write some code to read from command line arguments
+  td = torch.load('trained_model.ckpt', map_location=torch.device(device))
+  ntd = {}
+  # naive way to remove 'module.' before the name of each tensor
+  for k in td:
+    if k[:6] == 'module':
+      ntd[k[7:]] = td[k]
+    else:
+      ntd[k] = td[k]
+  ret = net.load_state_dict(ntd, strict=False)
+  print(ret)
 
   arr = np.array([fshape[0], fshape[1]], dtype=np.uint16)
   arr.tofile(fileobj)
@@ -766,9 +783,21 @@ def decompress_low(args):
     net = NetHigh()
   net = net.to(device)
   
-  sd = net.state_dict()
-  td = load_tf_weights(sd, f'models/model{model_type}_qp{qp}.pk')
-  net.load_state_dict(td)
+  # sd = net.state_dict()
+  # td = load_tf_weights(sd, f'models/model{model_type}_qp{qp}.pk')
+  # Changed to directly load the weights
+  # Here we only manually load one fixed model for testing
+  # You can write some code to read from command line arguments 
+  td = torch.load('trained_model.ckpt', map_location=torch.device(device))
+  ntd = {}
+  # naive way to remove 'module.' before the name of each tensor
+  for k in td:
+    if k[:6] == 'module':
+      ntd[k[7:]] = td[k]
+    else:
+      ntd[k] = td[k]
+  ret = net.load_state_dict(ntd, strict=False)
+  print(ret)
 
   def decode_block(padded_h, padded_w):
     with torch.no_grad():
